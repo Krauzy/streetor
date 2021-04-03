@@ -4,7 +4,7 @@ import plotly.express as px
 
 
 def plot_map(mapbox_style='carto-positron', period='Dawn', src_color='black', pred_color='red'):
-    sp = pd.read_excel('./data/dataset.xlsx')
+    sp = pd.read_excel('./resources/dataset.xlsx')
     sp = sp[sp['Period'] == period]
     fig = px.scatter_mapbox(sp,
                             lat='Latitude',

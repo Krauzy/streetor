@@ -8,6 +8,7 @@ pandas = "*"
 matplotlib = "*"
 "plotly.express" = "*"
 streamlit = "*"
+numpy = "*"
 
 [dev-packages]
 
