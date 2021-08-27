@@ -1,5 +1,4 @@
 import streamlit as st
-import plotly.graph_objects as go
 import plotly.express as px
 from time import strftime, localtime
 from datetime import datetime
@@ -17,6 +16,7 @@ def get_map():
                 lat="Latitude", 
                 lon="Longitude",
                 color_discrete_sequence=['#6411ad'],
+                # color='Type',
                 hover_name='Vehicle',
                 hover_data=['Victim', 'Day of Week', 'Hour'],
                 height=500,
@@ -26,6 +26,12 @@ def get_map():
     return fig
     
 def render_home():
+    st.set_page_config(
+        page_title='Streetor',
+        page_icon='🚗',
+        layout='centered',
+        initial_sidebar_state='collapsed'
+    )
     cmp.set_radio_horizontal()
     static_week = strftime('%A', localtime())
     # Sidebar
