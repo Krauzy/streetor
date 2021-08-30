@@ -1,5 +1,5 @@
 # MAIN
 
-from src.routes.routes import route
+from src.pages.home import render
 
-route()
+render()
