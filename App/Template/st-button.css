@@ -1,0 +1,15 @@
+div.stButton > button {
+    width: 100%;
+    transition: all 0.5s
+}
+
+div.stButton > button:hover {
+    background-color: #fff;
+    color: rgb(103, 23, 173);
+    border-color: #fff;
+}
+
+div.stButton > button:focus {
+    outline: none;
+    box-shadow: none;
+}

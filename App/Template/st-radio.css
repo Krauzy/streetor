@@ -1,0 +1,4 @@
+div.row-widget.stRadio > div {
+    flex-direction:row;
+    gap: 15px;
+}

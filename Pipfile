@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "streetor"
+
+[packages]
+pandas = "*"
+streamlit = "*"
+pymongo = "*"
+plotly = "*"
+scikit-learn = "*"
+
+[dev-packages]
+python-dotenv = "*"
+
+[requires]
+python_version = "3.9"

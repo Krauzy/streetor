@@ -1,0 +1,21 @@
+.stAlert {
+    background-color: rgb(255, 234, 0, 0.6);
+    border-radius: 4px;
+}
+
+div.stAlert > div > div > div > div > p {
+    color: white;
+}
+
+[data-baseweb="accordion"],
+[data-baseweb="accordion"] > li > div,
+[data-baseweb="accordion"] > li > div > svg {
+    transition: all 0.5s;
+}
+
+[data-baseweb="accordion"]:hover,
+[data-baseweb="accordion"] > li > div:hover,
+[data-baseweb="accordion"] > li > div > svg:hover {
+    color: white;
+    border-color: #AE58E0;
+}
