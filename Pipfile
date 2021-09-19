@@ -6,7 +6,7 @@ name = "streetor"
 [packages]
 pandas = "*"
 streamlit = "*"
-pymongo = "*"
+pymongo = {extras = ["srv"], version = "*"}
 plotly = "*"
 scikit-learn = "*"
 

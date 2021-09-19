@@ -1,5 +1,7 @@
 import streamlit as st
 from App.Pages.Components.map import plot_map
+from App.Pages.Components.load import load_component
+from App.Database.db import get
 
 
 def home_render() -> None:
@@ -8,43 +10,59 @@ def home_render() -> None:
 
     :return: Name route
     """
+
+    # SIDEBAR PANEL
+
     st.sidebar.title('🔧 Settings')
     st.sidebar.markdown('---')
 
+    # Map settings section
     with st.sidebar.expander('🗺️ Map'):
         st.caption('Settings of map display')
         st.markdown('---')
-        g_theme = st.selectbox(label='Theme',
-                               options=['Dark', 'White', 'Default'],
-                               index=0)
-        g_real = st.color_picker(label='Primary color',
-                                 value='#7D28C9')
-        g_predict = st.color_picker(label='Secondary color',
-                                    value='#DC2F02')
-
+        _theme = st.selectbox(label='Theme',
+                              options=[
+                                  'Dark',
+                                  'White',
+                                  'Default'
+                              ],
+                              index=0)
+        _real = st.color_picker(label='Primary color',
+                                value='#7D28C9')
+        _predict = st.color_picker(label='Secondary color',
+                                   value='#DC2F02')
+    # Model settings section
     with st.sidebar.expander('⚙️ Model'):
         st.caption('Settings of IA model')
-        # st.text(' ')
         st.markdown('---')
-        g_clusters = st.select_slider(label='Number of Clusters',
-                                      options=range(0, 251),
-                                      value=100)
+        _clusters = st.select_slider(label='Number of Clusters',
+                                     options=range(0, 251),
+                                     value=100)
 
-        if g_clusters < 20 and g_clusters != 0:
+        if _clusters < 20 and _clusters != 0:
             st.warning('Very low number of clusters')
-        elif g_clusters > 150:
+        elif _clusters > 150:
             st.warning('Very high number of clusters')
-        elif g_clusters == 0:
+        elif _clusters == 0:
             st.warning('Number of clusters will be set by Streetor')
 
-        g_k = st.select_slider(label='K value',
-                               options=range(1, 6),
-                               value=1)
+        _k = st.select_slider(label='K value',
+                              options=range(1, 6),
+                              value=1)
+
+    # MAIN PANEL
 
     st.title('Streetor 🚗')
     st.caption('The best way to deal with a problem')
     st.markdown('---')
-    show = st.selectbox(label='',
-                        options=['🗺️ Map', '📊 Graph'])
+    _show = st.selectbox(label='',
+                         options=[
+                             '🗺️ Map',
+                             '📊 Graph'
+                         ])
+
+    with st.empty():
+        load_component('App/Template/loading.html')
+        st.dataframe(get(fields={'_id': 0}, limit=2000))
     # st.plotly_chart(plot_map(None))
     return

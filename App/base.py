@@ -1,6 +1,6 @@
 import streamlit as st
 from App.Pages.home import home_render
-from App.Pages.Components.load import load_template
+from App.Pages.Components.load import load_style
 
 
 def render() -> None:
@@ -15,7 +15,7 @@ def render() -> None:
         layout='centered',
         initial_sidebar_state='collapsed'
     )
-    load_template('App/Template/global.css')
-    load_template('App/Template/st-radio.css')
-    load_template('App/Template/st-button.css')
+    load_style('App/Template/global.css')
+    load_style('App/Template/st-radio.css')
+    load_style('App/Template/st-button.css')
     home_render()
