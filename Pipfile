@@ -9,6 +9,7 @@ streamlit = "*"
 pymongo = {extras = ["srv"], version = "*"}
 plotly = "*"
 scikit-learn = "*"
+extra-streamlit-components = "*"
 
 [dev-packages]
 python-dotenv = "*"

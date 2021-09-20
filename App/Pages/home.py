@@ -4,7 +4,7 @@ from App.Pages.Components.load import load_component
 from App.Database.db import get
 
 
-def home_render() -> None:
+def home_render(cookies) -> None:
     """
     Home application *render*
 
@@ -31,6 +31,7 @@ def home_render() -> None:
                                 value='#7D28C9')
         _predict = st.color_picker(label='Secondary color',
                                    value='#DC2F02')
+
     # Model settings section
     with st.sidebar.expander('⚙️ Model'):
         st.caption('Settings of IA model')
@@ -49,6 +50,10 @@ def home_render() -> None:
         _k = st.select_slider(label='K value',
                               options=range(1, 6),
                               value=1)
+
+    if st.sidebar.button('DB'):
+        cookies.set('route', 'db')
+        st.experimental_rerun()
 
     # MAIN PANEL
 
