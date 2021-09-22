@@ -11,8 +11,10 @@ class StreetorModel:
 
         if data is None:
             st.error('Failed to load the dataset')
+            self.error = True
             return
         else:
+            self.error = False
             self.data = DataFrame(data)
 
         self.n_clusters = None
@@ -48,10 +50,6 @@ class StreetorModel:
         self.total = None
         self.dataset = None
 
-    def get_best_cluster(self) -> int:
-
-        return 100
-
     def filter(self, week, turn) -> None:
 
         if week is not None:
@@ -60,16 +58,14 @@ class StreetorModel:
         if turn is not None:
             self.data = self.data[self.data['PERIOD'] == turn]
 
-    def run(self, k=1, clusters=100, acc=1.5):
+    def run(self, k=1, clusters=100, acc=1.5) -> None:
 
         if k <= 0:
             self.k = 1
         else:
             self.k = k
 
-        if clusters == 0:
-            self.n_clusters = self.get_best_cluster()
-        elif clusters < len(self.data):
+        if (clusters <= 0) | (clusters >= len(self.data)):
             self.n_clusters = clusters / 3
         else:
             self.n_clusters = clusters
@@ -175,7 +171,7 @@ class StreetorModel:
         self.total = len(self.data_test) + len(self.data_train)
         self.dataset = concat([self.data_predict, self.data_test])
 
-    def response(self):
+    def response(self) -> tuple:
         return self.dataset, {
             'MAE': self.mae,
             'MSE': self.mse,
@@ -188,4 +184,3 @@ class StreetorModel:
             'ACC': self.acc,
             'TOTAL': self.total
         }
-
