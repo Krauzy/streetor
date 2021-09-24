@@ -16,6 +16,21 @@ class StreetorModel:
         else:
             self.error = False
             self.data = DataFrame(data)
+            if 'MONTH' in self.data.columns:
+                self.data['MONTH'] = self.data['MONTH'].replace({
+                    'JANUARY': 1,
+                    'FEBRUARY': 2,
+                    'MARCH': 3,
+                    'APRIL': 4,
+                    'MAY': 5,
+                    'JUNE': 6,
+                    'JULY': 7,
+                    'AUGUST': 8,
+                    'SEPTEMBER': 9,
+                    'OCTOBER': 10,
+                    'NOVEMBER': 11,
+                    'DECEMBER': 12
+                })
 
         self.n_clusters = None
 
@@ -50,13 +65,10 @@ class StreetorModel:
         self.total = None
         self.dataset = None
 
-    def filter(self, week, turn) -> None:
+    def filter(self, field, value) -> None:
 
-        if week is not None:
-            self.data = self.data[self.data['WEEK'] == week]
-
-        if turn is not None:
-            self.data = self.data[self.data['PERIOD'] == turn]
+        if value is not None:
+            self.data = self.data[self.data[field] == value]
 
     def run(self, k=1, clusters=100, acc=1.5) -> None:
 

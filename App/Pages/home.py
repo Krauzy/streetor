@@ -1,3 +1,9 @@
+"""
+Home page settings, render and config
+
+> home_render - Render the home page
+"""
+
 import streamlit as st
 from App.Pages.Components.map import plot_map
 from App.Pages.Components.load import load_component
@@ -8,6 +14,7 @@ def home_render(cookies) -> None:
     """
     Home application *render*
 
+    :param cookies: cookies manager
     :return: Name route
     """
 
@@ -51,9 +58,18 @@ def home_render(cookies) -> None:
                               options=range(1, 6),
                               value=1)
 
-    if st.sidebar.button('DB'):
-        cookies.set('route', 'db')
-        st.experimental_rerun()
+    with st.sidebar.expander('💾 Database'):
+        st.caption('Settings and Visualization Data')
+        st.markdown('---')
+        st.checkbox(label='Only fatality accidents', value=False)
+        st.checkbox(label='Only streets', value=False)
+        st.markdown('---')
+        st.slider('Period', 2007, 2021, (2010, 2021), 1)
+        st.markdown('---')
+
+        if st.button('⚡ API'):
+            cookies.set('route', 'db')
+            st.experimental_rerun()
 
     # MAIN PANEL
 

@@ -40,10 +40,14 @@ def render() -> None:
             cookies.set('route', 'home')
             container.empty()
 
+    # if not hasattr(st, 'route'):
+    #     st.route = 'home'
+    # route = getattr(st, 'route')
+
     route = cookies.get('route')
 
-    # Check the cookie 'route'
-    if (route is None) | (route == 'home'):
+    # Check the 'route'
+    if (route == 'home') | (route is None):
         # Render home page
         home_render(cookies)
     else:
