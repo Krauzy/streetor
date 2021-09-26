@@ -5,9 +5,10 @@ Home page settings, render and config
 """
 
 import streamlit as st
-from App.Pages.Components.map import plot_map
+from App.Pages.Components.map import scatterplot_map
 from App.Pages.Components.load import load_component
 from App.Database.db import get
+from App.Data.single import load_model, run_model
 
 
 def home_render(cookies) -> None:
@@ -84,6 +85,25 @@ def home_render(cookies) -> None:
 
     with st.empty():
         load_component('App/Template/loading.html')
-        st.dataframe(get(fields={'_id': 0}, limit=2000))
-    # st.plotly_chart(plot_map(None))
+        model = load_model(
+            {
+                '_id': 0,
+                'CITY': 0,
+                'PLACE': 0,
+                'WEEK': 0,
+                'PERIOD': 0,
+                'ROAD': 0,
+                'VEHICLE': 0
+            },
+            {
+                'CITY': 'PRESIDENTE PRUDENTE',
+                'WEEK': 'FRIDAY',
+                'PERIOD': 'EVENING'
+            }
+        )
+        data, infos = run_model(model)
+        st.plotly_chart(scatterplot_map(data, theme='carto-darkmatter', colors=['#6717AD']))
+    st.write('ACC: ', infos['ACC'])
+    st.write('R2: ', infos['R2'])
+    st.write('MAE: ', infos['MAE'])
     return

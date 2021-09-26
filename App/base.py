@@ -12,11 +12,17 @@ def render() -> None:
     """
 
     # Load streamlit page configs like title, icon, and others...
+    about_info = ''' ## 🚗 Streetor App
+    ---
+    This app uses ML model with `KMeans` and `KNN` to predict accidents locations in urban zones 
+    
+    ⚡[View on Github](https://github.com/Krauzy)⚡'''
     st.set_page_config(
         page_title='Streetor',
         page_icon='🚗',
         layout='centered',
-        initial_sidebar_state='collapsed'
+        initial_sidebar_state='collapsed',
+        menu_items={'About': about_info}
     )
 
     # Load style templates .css

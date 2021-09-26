@@ -16,6 +16,7 @@ class StreetorModel:
         else:
             self.error = False
             self.data = DataFrame(data)
+            print(self.data)
             if 'MONTH' in self.data.columns:
                 self.data['MONTH'] = self.data['MONTH'].replace({
                     'JANUARY': 1,
@@ -65,6 +66,9 @@ class StreetorModel:
         self.total = None
         self.dataset = None
 
+        self.period = None
+        self.week = None
+
     def filter(self, field, value) -> None:
 
         if value is not None:
@@ -78,13 +82,13 @@ class StreetorModel:
             self.k = k
 
         if (clusters <= 0) | (clusters >= len(self.data)):
-            self.n_clusters = clusters / 3
+            self.n_clusters = int(len(self.data) / 3)
         else:
             self.n_clusters = clusters
-
+        # print('CLUSTERS:', self.n_clusters)
         kmeans = KMeans(self.n_clusters)
-        self.data['cluster'] = kmeans.fit(self.data['LATITUDE', 'LONGITUDE'])
-
+        self.data['cluster'] = kmeans.fit_predict(self.data[['LATITUDE', 'LONGITUDE']])
+        # print(self.data)
         train = self.data[:]
 
         self.data_predict = DataFrame()
@@ -94,9 +98,10 @@ class StreetorModel:
         for i in range(self.n_clusters):
             knn = KNeighborsRegressor(n_neighbors=k)
             df = train[train['cluster'] == i]
+            # print('len(df): ', len(df), 'self.diff: ', self.diff)
             if len(df) > self.diff:
                 total = len(df)
-                half = total - (total / 2)
+                half = int(total - (total / 2))
 
                 t_train = df[:half].sort_values(by='LONGITUDE')
                 t_test = df[half:]
@@ -122,13 +127,13 @@ class StreetorModel:
 
         self.mse = round(mean_squared_error(
             self.data_test[['LATITUDE', 'LONGITUDE']],
-            self.data_predict[['LATITUDE', 'LONGITUDE']]
+            self.data_predict[['LATITUDE', 'LONGITUDE']],
+            squared=False
         ), 8)
 
         self.rmse = round(mean_squared_error(
             self.data_test[['LATITUDE', 'LONGITUDE']],
-            self.data_predict[['LATITUDE', 'LONGITUDE']],
-            squared=False
+            self.data_predict[['LATITUDE', 'LONGITUDE']]
         ), 8)
 
         self.r2 = round(r2_score(
@@ -169,19 +174,24 @@ class StreetorModel:
 
         _acc = []
         km = acc / 100
-
         for i in range(len(test)):
             v = (self.lat[i] + self.lon[i]) / 2
-            res = 1 if v <= km else 0
+            # print(v, km, v <= km)
+            if v <= km:
+                res = 1
+            else:
+                res = 0
             _acc.append(res)
 
         self.data_predict['CHECK'] = _acc
-        self.acc = round(len(self.data_predict['CHECK'] == 1) * 100 / len(self.data_predict), 2)
+        self.acc = round(len(self.data_predict[self.data_predict['CHECK'] == 1]) * 100 / len(self.data_predict), 2)
         self.data_predict['TARGET'] = 'PREDICT'
         self.data_test['TARGET'] = 'REAL'
         self.data_train['TARGET'] = 'REAL'
         self.total = len(self.data_test) + len(self.data_train)
         self.dataset = concat([self.data_predict, self.data_test])
+        self.dataset['WEEK'] = self.week
+        self.dataset['PERIOD'] = self.period
 
     def response(self) -> tuple:
         return self.dataset, {
