@@ -22,21 +22,21 @@ def scatterplot_map(info: DataFrame, colors=None, theme='open-street-map') -> Fi
     """
     if colors is None:
         colors = ['#DC2F02', '#7D28C9']
-    info = info[info['TARGET'] == 'PREDICT']
-    print(len(info))
-    if len(info) < 100:
-        info['ADDRESS'] = make_address(info)
-    else:
-        info['ADDRESS'] = 'NOT AVAILABLE'
+    # info = info[info['TARGET'] == 'PREDICT']
+    # print(len(info))
+    # if len(info) < 100:
+    #    info['ADDRESS'] = make_address(info)
+    # else:
+    #    info['ADDRESS'] = 'NOT AVAILABLE'
     fig = px.scatter_mapbox(info,
                             lat="LATITUDE",
                             lon="LONGITUDE",
                             color_discrete_sequence=colors,
                             # color='TARGET',
                             hover_name='TARGET',
-                            hover_data=['WEEK', 'PERIOD', 'ADDRESS'],
+                            hover_data=['WEEK', 'PERIOD'],
                             height=500,
-                            width=700,
+                            width=704,
                             zoom=10,
                             mapbox_style=theme)
     fig.update_layout(margin={'r': 0, 't': 0, 'l': 0, 'b': 0})

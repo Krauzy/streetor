@@ -19,3 +19,7 @@ div.stAlert > div > div > div > div > p {
     color: white;
     border-color: #AE58E0;
 }
+
+[data-testid="stMarkdownContainer"] > table {
+    width: 100%;
+}

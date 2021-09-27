@@ -29,11 +29,14 @@ def render() -> None:
     load_style('App/Template/global.css')
     load_style('App/Template/st-radio.css')
     load_style('App/Template/st-button.css')
+    load_template('App/Template/poppins.html')
 
     # Init Cookie Manager that let use cookies section
     cookies = stx.CookieManager()
 
-    if not hasattr(st, 'accepted_cookies'):
+    route = cookies.get('route')
+
+    if (route is None) | (not hasattr(st, 'accepted_cookies')):
         _, s2, _ = st.columns([1, 5, 1])
         container = s2.empty()
         with container.form('cookie_form'):
@@ -53,13 +56,15 @@ def render() -> None:
     route = cookies.get('route')
 
     # Check the 'route'
-    if (route == 'home') | (route is None):
+    if route == 'home':
         # Render home page
         home_render(cookies)
-    else:
+    elif route == 'api':
         # Render API page
         st.warning('DB')
         x = st.button('click')
         st.write(x)
         if st.button('Back'):
             cookies.set('route', 'home')
+
+    return

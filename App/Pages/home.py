@@ -6,8 +6,7 @@ Home page settings, render and config
 
 import streamlit as st
 from App.Pages.Components.map import scatterplot_map
-from App.Pages.Components.load import load_component
-from App.Database.db import get
+from App.Pages.Components.load import load_component, load_style
 from App.Data.single import load_model, run_model
 
 
@@ -18,6 +17,8 @@ def home_render(cookies) -> None:
     :param cookies: cookies manager
     :return: Name route
     """
+
+    load_style('App/Template/table.css')
 
     # SIDEBAR PANEL
 
@@ -35,25 +36,28 @@ def home_render(cookies) -> None:
                                   'Default'
                               ],
                               index=0)
-        _real = st.color_picker(label='Primary color',
-                                value='#7D28C9')
-        _predict = st.color_picker(label='Secondary color',
-                                   value='#DC2F02')
+
+        if _theme == 'Dark':
+            _theme = 'carto-darkmatter'
+        elif _theme == 'White':
+            _theme = 'carto-positron'
+        else:
+            _theme = 'open-street-map'
+
+        _primary = st.color_picker(label='Primary color',
+                                   value='#7D28C9')
+        _secondary = st.color_picker(label='Secondary color',
+                                     value='#DC2F02')
 
     # Model settings section
     with st.sidebar.expander('⚙️ Model'):
         st.caption('Settings of IA model')
         st.markdown('---')
-        _clusters = st.select_slider(label='Number of Clusters',
-                                     options=range(0, 251),
-                                     value=100)
-
-        if _clusters < 20 and _clusters != 0:
-            st.warning('Very low number of clusters')
-        elif _clusters > 150:
-            st.warning('Very high number of clusters')
-        elif _clusters == 0:
-            st.warning('Number of clusters will be set by Streetor')
+        _clusters = st.checkbox('Clusters will be set by Streetor', value=True)
+        if not _clusters:
+            _clusters = st.select_slider(label='Number of Clusters',
+                                         options=range(1, 252),
+                                         value=100)
 
         _k = st.select_slider(label='K value',
                               options=range(1, 6),
@@ -62,14 +66,23 @@ def home_render(cookies) -> None:
     with st.sidebar.expander('💾 Database'):
         st.caption('Settings and Visualization Data')
         st.markdown('---')
-        st.checkbox(label='Only fatality accidents', value=False)
-        st.checkbox(label='Only streets', value=False)
+        st.checkbox(label='Only fatality accidents',
+                    value=False)
+        st.checkbox(label='Only streets',
+                    value=False)
+        st.checkbox(label='Show address',
+                    value=False,
+                    help='This requires a very high cost, so it may take a while')
         st.markdown('---')
-        st.slider('Period', 2007, 2021, (2010, 2021), 1)
+        st.slider(label='Period',
+                  min_value=2007,
+                  max_value=2021,
+                  value=(2010, 2021),
+                  step=1)
         st.markdown('---')
 
         if st.button('⚡ API'):
-            cookies.set('route', 'db')
+            cookies.set('route', 'api')
             st.experimental_rerun()
 
     # MAIN PANEL
@@ -102,8 +115,66 @@ def home_render(cookies) -> None:
             }
         )
         data, infos = run_model(model)
-        st.plotly_chart(scatterplot_map(data, theme='carto-darkmatter', colors=['#6717AD']))
-    st.write('ACC: ', infos['ACC'])
-    st.write('R2: ', infos['R2'])
-    st.write('MAE: ', infos['MAE'])
+        st.plotly_chart(scatterplot_map(data, theme=_theme, colors=[_secondary]))
+
+    st.markdown('### Information')
+    with st.expander('🎯 Result'):
+        st.markdown('''
+            ---
+            | Tag | Values |
+            | ----- | ----- |
+            | Accuracy | `{}` |
+            | R² | `{}` |
+            | Mean Absolute Error | `{}` |
+            | Mean Squared Error | `{}` |
+            | Root Mean Squared Error | `{}` |
+            | Mean Latitude | `{}` |
+            | Mean Longitude | `{}` |
+            | Sum Latitude | `{}` |
+            | Sum Longitude | `{}` |
+        '''.format(
+            str(infos['ACC']) + '%',
+            str(infos['R2']) + '%',
+            str(infos['MAE']),
+            str(infos['MSE']),
+            str(infos['RMSE']),
+            str(infos['MED_LAT']),
+            str(infos['MED_LON']),
+            str(infos['SUM_LAT']),
+            str(infos['SUM_LON'])
+        ))
+        st.write(' ')
+
+    with st.expander('🤖 Machine Learning'):
+        st.markdown('''
+            ---
+            | Tag | Values |
+            | ----- | ----- |
+            | K value of KNN | `{}` |
+            | Number of Clusters | `{}` |
+            | Distance Variance | `{} KM`|
+        '''.format(
+            str(infos['KNN']),
+            str(infos['CLUSTERS']),
+            str(infos['KM'])
+        ))
+        st.write(' ')
+
+    with st.expander('💾 Data'):
+        st.markdown('''
+            ---
+            | Tag | Values |
+            | ----- | ----- |
+            | City | `{}` |
+            | Period | `{}` |
+            | Day of Week | `{}` |
+            | Total of Accidents | `{}` |
+        '''.format(
+            'PRESIDENTE PRUDENTE',
+            str(infos['PERIOD']),
+            str(infos['WEEK']),
+            str(infos['TOTAL'])
+        ))
+        st.write(' ')
+
     return

@@ -16,7 +16,6 @@ class StreetorModel:
         else:
             self.error = False
             self.data = DataFrame(data)
-            print(self.data)
             if 'MONTH' in self.data.columns:
                 self.data['MONTH'] = self.data['MONTH'].replace({
                     'JANUARY': 1,
@@ -68,6 +67,8 @@ class StreetorModel:
 
         self.period = None
         self.week = None
+
+        self.km = None
 
     def filter(self, field, value) -> None:
 
@@ -160,8 +161,8 @@ class StreetorModel:
             self.lat.append(abs(x))
             self.lon.append(abs(y))
 
-        self.med_lat = round(sum(self.lat) / len(self.lat), 4)
-        self.med_lon = round(sum(self.lon) / len(self.lon), 4)
+        self.med_lat = round(sum(self.lat) / len(self.lat), 8)
+        self.med_lon = round(sum(self.lon) / len(self.lon), 8)
 
         t = self.data_test.reset_index()
         self.res_lat = DataFrame(data=self.t_lat, columns=['RESIDUAL'])
@@ -169,8 +170,10 @@ class StreetorModel:
         self.res_lon = DataFrame(data=self.t_lon, columns=['RESIDUAL'])
         self.res_lon['LONGITUDE'] = t['LONGITUDE']
 
-        self.sum_lat = round(sum(self.res_lat['RESIDUAL']), 4)
-        self.sum_lon = round(sum(self.res_lon['RESIDUAL']), 4)
+        self.sum_lat = round(sum(self.res_lat['RESIDUAL']), 8)
+        self.sum_lon = round(sum(self.res_lon['RESIDUAL']), 8)
+
+        self.km = acc
 
         _acc = []
         km = acc / 100
@@ -204,5 +207,10 @@ class StreetorModel:
             'SUM_LAT': self.sum_lat,
             'SUM_LON': self.sum_lon,
             'ACC': self.acc,
-            'TOTAL': self.total
+            'TOTAL': self.total,
+            'KNN': self.k,
+            'CLUSTERS': self.n_clusters,
+            'PERIOD': self.period,
+            'WEEK': self.week,
+            'KM': self.km
         }

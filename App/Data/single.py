@@ -12,7 +12,7 @@ def load_model(fields, filter) -> StreetorModel:
 
 
 @st.cache(show_spinner=False)
-def run_model(model: StreetorModel, knn=1, clusters=200, acc=1.5) -> tuple or None:
+def run_model(model: StreetorModel, knn=1, clusters=200, acc=0.5) -> tuple or None:
     if model.error:
         st.error('Failed to load dataset')
         return None
