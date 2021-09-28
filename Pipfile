@@ -10,6 +10,7 @@ pymongo = {extras = ["srv"], version = "*"}
 plotly = "*"
 scikit-learn = "*"
 extra-streamlit-components = "*"
+seaborn = "*"
 
 [dev-packages]
 python-dotenv = "*"

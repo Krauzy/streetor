@@ -212,5 +212,7 @@ class StreetorModel:
             'CLUSTERS': self.n_clusters,
             'PERIOD': self.period,
             'WEEK': self.week,
-            'KM': self.km
+            'KM': self.km,
+            'RES_LON': self.res_lon,
+            'RES_LAT': self.res_lat
         }

@@ -1,4 +1,5 @@
 import plotly.express as px
+import seaborn as sns
 import streamlit as st
 from pandas import DataFrame
 from plotly.graph_objects import Figure
@@ -22,7 +23,7 @@ def scatterplot_map(info: DataFrame, colors=None, theme='open-street-map') -> Fi
     """
     if colors is None:
         colors = ['#DC2F02', '#7D28C9']
-    # info = info[info['TARGET'] == 'PREDICT']
+    info = info[info['TARGET'] == 'PREDICT']
     # print(len(info))
     # if len(info) < 100:
     #    info['ADDRESS'] = make_address(info)
@@ -39,5 +40,34 @@ def scatterplot_map(info: DataFrame, colors=None, theme='open-street-map') -> Fi
                             width=704,
                             zoom=10,
                             mapbox_style=theme)
-    fig.update_layout(margin={'r': 0, 't': 0, 'l': 0, 'b': 0})
+    fig.update_layout(margin={
+        'r': 0,
+        't': 0,
+        'l': 0,
+        'b': 0
+    })
     return fig
+
+
+def distplot(data, title) -> Figure:
+    # fig = px.histogram(data,
+    #                    x=x,
+    #                    y=y,
+    #                    hover_data=hover_data)
+    # fig.update_layout(margin={
+    #     'r': 0,
+    #     't': 0,
+    #     'l': 0,
+    #     'b': 0
+    # })
+    sns.set(rc={
+        'axes.facecolor': '#202020',
+        'figure.facecolor': '#202020',
+        'axes.labelcolor': '#ffffff',
+        'xtick.color': '#ffffff',
+        'ytick.color': '#ffffff',
+        'grid.linestyle': ''
+    })
+    fig = sns.displot(data['RESIDUAL'], kde=True, color='#6717AD', height=6, aspect=1.5).set_titles(title)
+    return fig.figure
+

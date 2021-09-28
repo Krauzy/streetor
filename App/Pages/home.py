@@ -5,7 +5,8 @@ Home page settings, render and config
 """
 
 import streamlit as st
-from App.Pages.Components.map import scatterplot_map
+from pandas import DataFrame
+from App.Pages.Components.map import scatterplot_map, distplot
 from App.Pages.Components.load import load_component, load_style
 from App.Data.single import load_model, run_model
 
@@ -118,7 +119,7 @@ def home_render(cookies) -> None:
         st.plotly_chart(scatterplot_map(data, theme=_theme, colors=[_secondary]))
 
     st.markdown('### Information')
-    with st.expander('🎯 Result'):
+    with st.expander('🎯 Result', expanded=False):
         st.markdown('''
             ---
             | Tag | Values |
@@ -145,7 +146,7 @@ def home_render(cookies) -> None:
         ))
         st.write(' ')
 
-    with st.expander('🤖 Machine Learning'):
+    with st.expander('🤖 Machine Learning', expanded=False):
         st.markdown('''
             ---
             | Tag | Values |
@@ -160,7 +161,7 @@ def home_render(cookies) -> None:
         ))
         st.write(' ')
 
-    with st.expander('💾 Data'):
+    with st.expander('💾 Data', expanded=False):
         st.markdown('''
             ---
             | Tag | Values |
@@ -177,4 +178,23 @@ def home_render(cookies) -> None:
         ))
         st.write(' ')
 
+    # st.json({
+    #     "dia": 31,
+    #     "mês": "dezembro",
+    #     "ano": 2020,
+    #     "dia_da_semana": "sabádo",
+    #     "periodo": "noite",
+    #     "cidade": "sao paulo",
+    #     "endereço": "avenida noel nutels",
+    #     "latitude": -23.855579136848,
+    #     "longitude": -46.71506881720071,
+    #     "veiculo": "automovel",
+    #     "via": "rua",
+    #     "vitimas": 1,
+    #     "fatalidade": "sim",
+    #     "hora": "22:30",
+    # })
+    #
+    # st.pyplot(distplot(DataFrame(infos['RES_LAT']), 'Latitude Residual'))
+    # st.pyplot(distplot(DataFrame(infos['RES_LON']), 'Longitude Residual'))
     return
