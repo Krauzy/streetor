@@ -5,8 +5,7 @@ Home page settings, render and config
 """
 
 import streamlit as st
-from pandas import DataFrame
-from App.Pages.Components.map import scatterplot_map, distplot
+from App.Pages.Components.map import scatterplot_map
 from App.Pages.Components.load import load_component, load_style
 from App.Data.single import load_model, run_model
 
@@ -120,62 +119,43 @@ def home_render(cookies) -> None:
 
     st.markdown('### Information')
     with st.expander('🎯 Result', expanded=False):
-        st.markdown('''
+        st.markdown(f'''
             ---
             | Tag | Values |
             | ----- | ----- |
-            | Accuracy | `{}` |
-            | R² | `{}` |
-            | Mean Absolute Error | `{}` |
-            | Mean Squared Error | `{}` |
-            | Root Mean Squared Error | `{}` |
-            | Mean Latitude | `{}` |
-            | Mean Longitude | `{}` |
-            | Sum Latitude | `{}` |
-            | Sum Longitude | `{}` |
-        '''.format(
-            str(infos['ACC']) + '%',
-            str(infos['R2']) + '%',
-            str(infos['MAE']),
-            str(infos['MSE']),
-            str(infos['RMSE']),
-            str(infos['MED_LAT']),
-            str(infos['MED_LON']),
-            str(infos['SUM_LAT']),
-            str(infos['SUM_LON'])
-        ))
+            | Accuracy | `{infos['ACC']}%` |
+            | R² | `{infos['R2']}%` |
+            | Mean Absolute Error | `{infos['MAE']}` |
+            | Mean Squared Error | `{infos['MSE']}` |
+            | Root Mean Squared Error | `{infos['RMSE']}` |
+            | Mean Latitude | `{infos['MED_LAT']}` |
+            | Mean Longitude | `{infos['MED_LON']}` |
+            | Sum Latitude | `{infos['SUM_LAT']}` |
+            | Sum Longitude | `{infos['SUM_LON']}` |
+        ''')
         st.write(' ')
 
     with st.expander('🤖 Machine Learning', expanded=False):
-        st.markdown('''
+        st.markdown(f'''
             ---
             | Tag | Values |
             | ----- | ----- |
-            | K value of KNN | `{}` |
-            | Number of Clusters | `{}` |
-            | Distance Variance | `{} KM`|
-        '''.format(
-            str(infos['KNN']),
-            str(infos['CLUSTERS']),
-            str(infos['KM'])
-        ))
+            | K value of KNN | `{infos['KNN']}` |
+            | Number of Clusters | `{infos['CLUSTERS']}` |
+            | Distance Variance | `{infos['KM']} KM`|
+        ''')
         st.write(' ')
 
     with st.expander('💾 Data', expanded=False):
-        st.markdown('''
+        st.markdown(f'''
             ---
             | Tag | Values |
             | ----- | ----- |
-            | City | `{}` |
-            | Period | `{}` |
-            | Day of Week | `{}` |
-            | Total of Accidents | `{}` |
-        '''.format(
-            'PRESIDENTE PRUDENTE',
-            str(infos['PERIOD']),
-            str(infos['WEEK']),
-            str(infos['TOTAL'])
-        ))
+            | City | `{'PRESIDENTE PRUDENTE'}` |
+            | Period | `{infos['PERIOD']}` |
+            | Day of Week | `{infos['WEEK']}` |
+            | Total of Accidents | `{infos['TOTAL']}` |
+        ''')
         st.write(' ')
 
     # st.json({
@@ -197,4 +177,3 @@ def home_render(cookies) -> None:
     #
     # st.pyplot(distplot(DataFrame(infos['RES_LAT']), 'Latitude Residual'))
     # st.pyplot(distplot(DataFrame(infos['RES_LON']), 'Longitude Residual'))
-    return

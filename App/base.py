@@ -1,10 +1,14 @@
+"""
+base render page
+"""
+
 import streamlit as st
 import extra_streamlit_components as stx
 from App.Pages.home import home_render
 from App.Pages.Components.load import load_style, load_template
 
 
-def render() -> None:
+def render():
     """
     Initial *render*
 
@@ -37,8 +41,8 @@ def render() -> None:
     route = cookies.get('route')
 
     if (route is None) | (not hasattr(st, 'accepted_cookies')):
-        _, s2, _ = st.columns([1, 5, 1])
-        container = s2.empty()
+        _, col, _ = st.columns([1, 5, 1])
+        container = col.empty()
         with container.form('cookie_form'):
             st.header('Cookies')
             st.write('By using this website, you automatically accept that we use cookies.')
@@ -62,9 +66,7 @@ def render() -> None:
     elif route == 'api':
         # Render API page
         st.warning('DB')
-        x = st.button('click')
-        st.write(x)
+        res = st.button('click')
+        st.write(res)
         if st.button('Back'):
             cookies.set('route', 'home')
-
-    return

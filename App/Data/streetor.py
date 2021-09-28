@@ -1,3 +1,8 @@
+"""
+StreetorModel: model of ML to predict transit
+accidents in urban zones with KMeans and KNN
+"""
+
 from pandas import DataFrame, concat
 from sklearn.cluster import KMeans
 from sklearn.neighbors import KNeighborsRegressor
@@ -6,31 +11,34 @@ import streamlit as st
 
 
 class StreetorModel:
-
+    """
+    StreetorModel: model of ML to predict transit
+    accidents in urban zones with KMeans and KNN
+    """
     def __init__(self, data) -> None:
 
         if data is None:
             st.error('Failed to load the dataset')
             self.error = True
             return
-        else:
-            self.error = False
-            self.data = DataFrame(data)
-            if 'MONTH' in self.data.columns:
-                self.data['MONTH'] = self.data['MONTH'].replace({
-                    'JANUARY': 1,
-                    'FEBRUARY': 2,
-                    'MARCH': 3,
-                    'APRIL': 4,
-                    'MAY': 5,
-                    'JUNE': 6,
-                    'JULY': 7,
-                    'AUGUST': 8,
-                    'SEPTEMBER': 9,
-                    'OCTOBER': 10,
-                    'NOVEMBER': 11,
-                    'DECEMBER': 12
-                })
+
+        self.error = False
+        self.data = DataFrame(data)
+        if 'MONTH' in self.data.columns:
+            self.data['MONTH'] = self.data['MONTH'].replace({
+                'JANUARY': 1,
+                'FEBRUARY': 2,
+                'MARCH': 3,
+                'APRIL': 4,
+                'MAY': 5,
+                'JUNE': 6,
+                'JULY': 7,
+                'AUGUST': 8,
+                'SEPTEMBER': 9,
+                'OCTOBER': 10,
+                'NOVEMBER': 11,
+                'DECEMBER': 12
+            })
 
         self.n_clusters = None
 
@@ -45,7 +53,7 @@ class StreetorModel:
         self.mae = None
         self.mse = None
         self.rmse = None
-        self.r2 = None
+        self.coef = None
 
         self.lat = None
         self.lon = None
@@ -68,14 +76,28 @@ class StreetorModel:
         self.period = None
         self.week = None
 
-        self.km = None
+        self.acc_km = None
 
     def filter(self, field, value) -> None:
+        """
+        Set filter on dataset
 
+        :param field: name of field that will be affected
+        :param value: value of field selected
+        :return: None
+        """
         if value is not None:
             self.data = self.data[self.data[field] == value]
 
     def run(self, k=1, clusters=100, acc=1.5) -> None:
+        """
+        run functions, that execute all train and test of ML model
+
+        :param k: k value of KNN
+        :param clusters: K value of KMeans
+        :param acc: accuracy of model
+        :return: None
+        """
 
         if k <= 0:
             self.k = 1
@@ -98,14 +120,14 @@ class StreetorModel:
 
         for i in range(self.n_clusters):
             knn = KNeighborsRegressor(n_neighbors=k)
-            df = train[train['cluster'] == i]
+            df_train = train[train['cluster'] == i]
             # print('len(df): ', len(df), 'self.diff: ', self.diff)
-            if len(df) > self.diff:
-                total = len(df)
+            if len(df_train) > self.diff:
+                total = len(df_train)
                 half = int(total - (total / 2))
 
-                t_train = df[:half].sort_values(by='LONGITUDE')
-                t_test = df[half:]
+                t_train = df_train[:half].sort_values(by='LONGITUDE')
+                t_test = df_train[half:]
 
                 x_train = t_train.drop(columns=['LATITUDE', 'LONGITUDE'])
                 y_train = t_train[['LATITUDE', 'LONGITUDE']]
@@ -137,7 +159,7 @@ class StreetorModel:
             self.data_predict[['LATITUDE', 'LONGITUDE']]
         ), 8)
 
-        self.r2 = round(r2_score(
+        self.coef = round(r2_score(
             self.data_test[['LATITUDE', 'LONGITUDE']],
             self.data_predict[['LATITUDE', 'LONGITUDE']]
         ) * 100, 2)
@@ -152,42 +174,41 @@ class StreetorModel:
 
         for i in range(len(test)):
 
-            x = test[i][0] - pred[i][0]
-            y = test[i][1] - pred[i][1]
+            temp_lat = test[i][0] - pred[i][0]
+            temp_lon = test[i][1] - pred[i][1]
 
-            self.t_lat.append(x)
-            self.t_lon.append(y)
+            self.t_lat.append(temp_lat)
+            self.t_lon.append(temp_lon)
 
-            self.lat.append(abs(x))
-            self.lon.append(abs(y))
+            self.lat.append(abs(temp_lat))
+            self.lon.append(abs(temp_lon))
 
         self.med_lat = round(sum(self.lat) / len(self.lat), 8)
         self.med_lon = round(sum(self.lon) / len(self.lon), 8)
 
-        t = self.data_test.reset_index()
+        temp = self.data_test.reset_index()
         self.res_lat = DataFrame(data=self.t_lat, columns=['RESIDUAL'])
-        self.res_lat['LATITUDE'] = t['LATITUDE']
+        self.res_lat['LATITUDE'] = temp['LATITUDE']
         self.res_lon = DataFrame(data=self.t_lon, columns=['RESIDUAL'])
-        self.res_lon['LONGITUDE'] = t['LONGITUDE']
+        self.res_lon['LONGITUDE'] = temp['LONGITUDE']
 
         self.sum_lat = round(sum(self.res_lat['RESIDUAL']), 8)
         self.sum_lon = round(sum(self.res_lon['RESIDUAL']), 8)
 
-        self.km = acc
+        self.acc_km = acc
 
         _acc = []
-        km = acc / 100
+        km_value = acc / 100
         for i in range(len(test)):
-            v = (self.lat[i] + self.lon[i]) / 2
-            # print(v, km, v <= km)
-            if v <= km:
-                res = 1
+            mean_value = (self.lat[i] + self.lon[i]) / 2
+            if mean_value <= km_value:
+                _acc.append(1)
             else:
-                res = 0
-            _acc.append(res)
+                _acc.append(0)
 
         self.data_predict['CHECK'] = _acc
-        self.acc = round(len(self.data_predict[self.data_predict['CHECK'] == 1]) * 100 / len(self.data_predict), 2)
+        self.acc = round(len(self.data_predict[self.data_predict['CHECK'] == 1]) * 100
+                         / len(self.data_predict), 2)
         self.data_predict['TARGET'] = 'PREDICT'
         self.data_test['TARGET'] = 'REAL'
         self.data_train['TARGET'] = 'REAL'
@@ -197,11 +218,17 @@ class StreetorModel:
         self.dataset['PERIOD'] = self.period
 
     def response(self) -> tuple:
+        """
+        return the predict dataset and a dict of model stats
+
+        :return: The predict dataset and a dict of model stats
+        """
+
         return self.dataset, {
             'MAE': self.mae,
             'MSE': self.mse,
             'RMSE': self.rmse,
-            'R2': self.r2,
+            'R2': self.coef,
             'MED_LAT': self.med_lat,
             'MED_LON': self.med_lon,
             'SUM_LAT': self.sum_lat,
@@ -212,7 +239,7 @@ class StreetorModel:
             'CLUSTERS': self.n_clusters,
             'PERIOD': self.period,
             'WEEK': self.week,
-            'KM': self.km,
+            'KM': self.acc_km,
             'RES_LON': self.res_lon,
             'RES_LAT': self.res_lat
         }

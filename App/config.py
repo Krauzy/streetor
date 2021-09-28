@@ -2,9 +2,9 @@
 Config project application file
 """
 
+import os
 from dotenv import load_dotenv
 import streamlit as st
-import os
 
 
 def get_url() -> str:

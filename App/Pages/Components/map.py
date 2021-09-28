@@ -1,13 +1,23 @@
+"""
+Module of plot maps on streamlit theme style
+"""
+
 import plotly.express as px
 import seaborn as sns
 import streamlit as st
-from pandas import DataFrame
+from pandas import DataFrame, Series
 from plotly.graph_objects import Figure
 from App.Data.geoapi import get_address
 
 
 @st.cache(show_spinner=False)
-def make_address(data: DataFrame):
+def make_address(data: DataFrame) -> Series:
+    """
+    Get a Series of address rest by addressAPI
+    :param data: DataFrame of LATITUDE and LONGITUDE columns
+    :return:
+    """
+
     return data.apply(lambda x: get_address(x.LATITUDE, x.LONGITUDE), axis=1)
 
 
@@ -21,14 +31,17 @@ def scatterplot_map(info: DataFrame, colors=None, theme='open-street-map') -> Fi
     :param theme: theme name
     :return: The map plotted
     """
+
     if colors is None:
         colors = ['#DC2F02', '#7D28C9']
     info = info[info['TARGET'] == 'PREDICT']
+
     # print(len(info))
     # if len(info) < 100:
     #    info['ADDRESS'] = make_address(info)
     # else:
     #    info['ADDRESS'] = 'NOT AVAILABLE'
+
     fig = px.scatter_mapbox(info,
                             lat="LATITUDE",
                             lon="LONGITUDE",
@@ -49,17 +62,15 @@ def scatterplot_map(info: DataFrame, colors=None, theme='open-street-map') -> Fi
     return fig
 
 
-def distplot(data, title) -> Figure:
-    # fig = px.histogram(data,
-    #                    x=x,
-    #                    y=y,
-    #                    hover_data=hover_data)
-    # fig.update_layout(margin={
-    #     'r': 0,
-    #     't': 0,
-    #     'l': 0,
-    #     'b': 0
-    # })
+def distplot(data: DataFrame or list, title: str) -> Figure:
+    """
+    A distplot of RESIDUAL values
+
+    :param data: A DataFrame with RESIDUAL column
+    :param title: text will displayed in title figure
+    :return: Figure of map/graph plotted
+    """
+
     sns.set(rc={
         'axes.facecolor': '#202020',
         'figure.facecolor': '#202020',
@@ -68,6 +79,12 @@ def distplot(data, title) -> Figure:
         'ytick.color': '#ffffff',
         'grid.linestyle': ''
     })
-    fig = sns.displot(data['RESIDUAL'], kde=True, color='#6717AD', height=6, aspect=1.5).set_titles(title)
-    return fig.figure
 
+    fig = sns.displot(
+        data['RESIDUAL'],
+        kde=True,
+        color='#6717AD',
+        height=6,
+        aspect=1.5).set_titles(title)
+
+    return fig.figure
