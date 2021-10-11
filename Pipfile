@@ -12,6 +12,7 @@ scikit-learn = "*"
 extra-streamlit-components = "*"
 seaborn = "*"
 matplotlib = "*"
+certifi = "*"
 
 [dev-packages]
 python-dotenv = "*"

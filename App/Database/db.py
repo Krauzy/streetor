@@ -3,6 +3,7 @@ Access MongoDB module with pymongo
 """
 
 import streamlit as st
+import certifi
 from pandas import DataFrame
 from pymongo import MongoClient
 from App.config import get_url
@@ -17,7 +18,7 @@ def get_collection(cluster='main', collection='accidents'):
     :return: Collection instance
     """
 
-    client = MongoClient(get_url())
+    client = MongoClient(get_url(), tlsCAFile=certifi.where())
     database = client[cluster]
     return database[collection]
 

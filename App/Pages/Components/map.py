@@ -22,10 +22,14 @@ def make_address(data: DataFrame) -> Series:
 
 
 @st.cache(show_spinner=False)
-def scatterplot_map(info: DataFrame, colors=None, theme='open-street-map') -> Figure:
+def scatterplot_map(info: DataFrame,
+                    colors=None,
+                    theme='open-street-map',
+                    show_real=False) -> Figure:
     """
     Plot a scatter map built by *Plotly*
 
+    :param show_real: Show the real values or just the predict values
     :param info: DataFrame info data
     :param colors: Array of colors
     :param theme: theme name
@@ -34,7 +38,9 @@ def scatterplot_map(info: DataFrame, colors=None, theme='open-street-map') -> Fi
 
     if colors is None:
         colors = ['#DC2F02', '#7D28C9']
-    info = info[info['TARGET'] == 'PREDICT']
+
+    if not show_real:
+        info = info[info['TARGET'] == 'PREDICT']
 
     # print(len(info))
     # if len(info) < 100:
@@ -46,11 +52,11 @@ def scatterplot_map(info: DataFrame, colors=None, theme='open-street-map') -> Fi
                             lat="LATITUDE",
                             lon="LONGITUDE",
                             color_discrete_sequence=colors,
-                            # color='TARGET',
+                            color='TARGET',
                             hover_name='TARGET',
                             hover_data=['WEEK', 'PERIOD'],
                             height=500,
-                            width=704,
+                            width=814,
                             zoom=10,
                             mapbox_style=theme)
     fig.update_layout(margin={
