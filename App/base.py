@@ -62,7 +62,7 @@ def render():
     # Check the 'route'
     if (route is None) | (route == 'home'):
         # Render home page
-        home_render(cookies)
+        home_render()
     # elif route == 'api':
     #     # Render API page
     #     st.warning('DB')

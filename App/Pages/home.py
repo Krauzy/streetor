@@ -11,7 +11,7 @@ from App.Pages.Components.load import load_component, load_style
 from App.Data.single import load_model, run_model
 
 
-def home_render(cookies) -> None:
+def home_render() -> None:
     """
     Home application *render*
 
