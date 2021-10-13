@@ -1,4 +1,11 @@
 div.row-widget.stRadio > div {
     flex-direction:row;
-    gap: 15px;
+    gap: 40px;
+}
+
+@media screen and (max-width: 500px) {
+    div.row-widget > div {
+        flex-direction: column !important;
+        gap: 5px !important;
+    }
 }

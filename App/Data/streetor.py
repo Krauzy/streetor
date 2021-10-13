@@ -2,7 +2,7 @@
 StreetorModel: model of ML to predict transit
 accidents in urban zones with KMeans and KNN
 """
-
+from haversine import haversine
 from pandas import DataFrame, concat
 from sklearn.cluster import KMeans
 from sklearn.neighbors import KNeighborsRegressor
@@ -77,6 +77,7 @@ class StreetorModel:
         self.week = None
 
         self.acc_km = None
+        self.clusters_map = []
 
     def filter(self, field, value) -> None:
         """
@@ -121,7 +122,10 @@ class StreetorModel:
         for i in range(self.n_clusters):
             knn = KNeighborsRegressor(n_neighbors=k)
             df_train = train[train['cluster'] == i]
-            # print('len(df): ', len(df), 'self.diff: ', self.diff)
+            lat_med = sum(df_train['LATITUDE']) / len(df_train)
+            lon_med = sum(df_train['LONGITUDE']) / len(df_train)
+            self.clusters_map.append([lat_med, lon_med, len(df_train)])
+
             if len(df_train) > self.diff:
                 total = len(df_train)
                 half = int(total - (total / 2))
@@ -164,18 +168,20 @@ class StreetorModel:
             self.data_predict[['LATITUDE', 'LONGITUDE']]
         ) * 100, 2)
 
-        test = self.data_test.values.tolist()
-        pred = self.data_predict.values.tolist()
+        # test = self.data_test.values.tolist()
+        # pred = self.data_predict.values.tolist()
 
         self.lat = []
         self.lon = []
         self.t_lat = []
         self.t_lon = []
-
-        for i in range(len(test)):
-
-            temp_lat = test[i][0] - pred[i][0]
-            temp_lon = test[i][1] - pred[i][1]
+        i = 0
+        for _, row in self.data_test.iterrows():
+            temp_lat = row['LATITUDE'] - self.data_predict.iloc[i]['LATITUDE']
+            temp_lon = row['LONGITUDE'] - self.data_predict.iloc[i]['LONGITUDE']
+            i = i + 1
+            # temp_lat = test[i][0] - pred[i][0]
+            # temp_lon = test[i][1] - pred[i][1]
 
             self.t_lat.append(temp_lat)
             self.t_lon.append(temp_lon)
@@ -198,13 +204,21 @@ class StreetorModel:
         self.acc_km = acc
 
         _acc = []
-        km_value = acc / 100
-        for i in range(len(test)):
-            mean_value = (self.lat[i] + self.lon[i]) / 2
-            if mean_value <= km_value:
+        i = 0
+        for _, row in self.data_test.iterrows():
+            mean_value = haversine(
+                (row['LATITUDE'],
+                 row['LONGITUDE']),
+                (self.data_predict.iloc[i]['LATITUDE'],
+                 self.data_predict.iloc[i]['LONGITUDE'])
+            )
+            if mean_value <= self.acc_km:
                 _acc.append(1)
             else:
                 _acc.append(0)
+            i = i + 1
+
+            # print(haversine((test[i][0], test[i][1]), (pred[i][0], pred[i][1])))
 
         self.data_predict['CHECK'] = _acc
         self.acc = round(len(self.data_predict[self.data_predict['CHECK'] == 1]) * 100
@@ -241,5 +255,6 @@ class StreetorModel:
             'WEEK': self.week,
             'KM': self.acc_km,
             'RES_LON': self.res_lon,
-            'RES_LAT': self.res_lat
+            'RES_LAT': self.res_lat,
+            'CLUSTERS_MAP': self.clusters_map
         }

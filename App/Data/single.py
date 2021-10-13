@@ -23,7 +23,7 @@ def load_model(fields: dict, filter: dict) -> StreetorModel:
     return model
 
 
-@st.cache(show_spinner=False)
+@st.cache(show_spinner=False, allow_output_mutation=True)
 def run_model(model: StreetorModel, knn=1, clusters=200, acc=0.5) -> tuple or None:
     """
     Running functions of *StreetorModel*

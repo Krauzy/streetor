@@ -6,7 +6,7 @@ Home page settings, render and config
 import collections
 
 import streamlit as st
-from App.Pages.Components.map import scatterplot_map
+from App.Pages.Components.map import scatterplot_map, heat_map, bubble_map, distplot
 from App.Pages.Components.load import load_component, load_style
 from App.Data.single import load_model, run_model
 
@@ -306,6 +306,23 @@ def home_render(cookies) -> None:
 
     # MAIN PANEL
 
+    model = load_model(
+        fields={
+            '_id': 0,
+            'CITY': 0,
+            'PLACE': 0,
+            'WEEK': 0,
+            'PERIOD': 0,
+            'ROAD': 0,
+            'VEHICLE': 0
+        },
+        filter=_options
+    )
+    data, infos = run_model(model=model,
+                            knn=_k,
+                            clusters=_clusters,
+                            acc=_acc)
+
     st.title('Streetor 🚗')
     st.caption('The best way to deal with a problem')
     st.markdown('---')
@@ -314,30 +331,29 @@ def home_render(cookies) -> None:
                              '🗺️ Map',
                              '📊 Graph'
                          ])
-
-    with st.empty():
-        load_component('App/Template/loading.html')
-        model = load_model(
-            fields={
-                '_id': 0,
-                'CITY': 0,
-                'PLACE': 0,
-                'WEEK': 0,
-                'PERIOD': 0,
-                'ROAD': 0,
-                'VEHICLE': 0
-            },
-            filter=_options
-        )
-        data, infos = run_model(model=model,
-                                knn=_k,
-                                clusters=_clusters,
-                                acc=_acc)
-        st.plotly_chart(scatterplot_map(info=data,
-                                        theme=_theme,
-                                        colors=[_primary, _secondary],
-                                        show_real=_is_real))
-
+    if _show == '🗺️ Map':
+        _plot = st.radio('', ['🟠 Scatter', '🔴 Heat', '🟣 Bubble'])
+        with st.empty():
+            load_component('App/Template/loading.html')
+            if _plot == '🟠 Scatter':
+                st.plotly_chart(scatterplot_map(info=data,
+                                                theme=_theme,
+                                                colors=[_primary, _secondary],
+                                                show_real=_is_real,
+                                                address=_show_address))
+            elif _plot == '🔴 Heat':
+                st.plotly_chart(heat_map(infos['CLUSTERS_MAP'], theme=_theme))
+            else:
+                st.plotly_chart(bubble_map(infos['CLUSTERS_MAP'], theme=_theme))
+    else:
+        _plot = st.radio('', ['📈 Latitude', '📉 Longitude'])
+        with st.empty():
+            load_component('App/Template/loading.html')
+            if _plot == '📈 Latitude':
+                print(infos['RES_LAT'])
+                st.pyplot(distplot(infos['RES_LAT'], 'LATITUDE RESIDUAL'))
+            else:
+                st.pyplot(distplot(infos['RES_LON'], 'LONGITUDE RESIDUAL'))
     st.markdown('### Information')
     with st.expander('🎯 Result', expanded=False):
         st.markdown(f'''
@@ -364,6 +380,7 @@ def home_render(cookies) -> None:
             | K value of KNN | `{infos['KNN']}` |
             | Number of Clusters | `{infos['CLUSTERS']}` |
             | Distance Variance | `{infos['KM']} KM`|
+            | Metric Distance | `Haversine` |
         ''')
         st.write(' ')
 
@@ -396,5 +413,4 @@ def home_render(cookies) -> None:
     #     "hora": "22:30",
     # })
     #
-    # st.pyplot(distplot(DataFrame(infos['RES_LAT']), 'Latitude Residual'))
     # st.pyplot(distplot(DataFrame(infos['RES_LON']), 'Longitude Residual'))

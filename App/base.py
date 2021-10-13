@@ -38,20 +38,20 @@ def render():
     # Init Cookie Manager that let use cookies section
     cookies = stx.CookieManager()
 
-    route = cookies.get('route')
+    # route = cookies.get('route')
 
-    if (route is None) | (not hasattr(st, 'accepted_cookies')):
-        _, col, _ = st.columns([1, 5, 1])
-        container = col.empty()
-        with container.form('cookie_form'):
-            st.header('Cookies')
-            st.write('By using this website, you automatically accept that we use cookies.')
-            st.caption('disagree is not an option')
-            res = st.form_submit_button('Understood')
-        if res:
-            st.accepted_cookies = True
-            cookies.set('route', 'home')
-            container.empty()
+    # if (route is None) | (not hasattr(st, 'accepted_cookies')):
+    #     _, col, _ = st.columns([1, 5, 1])
+    #     container = col.empty()
+    #     with container.form('cookie_form'):
+    #         st.header('Cookies')
+    #         st.write('By using this website, you automatically accept that we use cookies.')
+    #         st.caption('disagree is not an option')
+    #         res = st.form_submit_button('Understood')
+    #     if res:
+    #         st.accepted_cookies = True
+    #         cookies.set('route', 'home')
+    #         container.empty()
 
     # if not hasattr(st, 'route'):
     #     st.route = 'home'
@@ -60,7 +60,7 @@ def render():
     route = cookies.get('route')
 
     # Check the 'route'
-    if route == 'home':
+    if (route is None) | (route == 'home'):
         # Render home page
         home_render(cookies)
     elif route == 'api':
