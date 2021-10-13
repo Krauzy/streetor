@@ -299,10 +299,10 @@ def home_render(cookies) -> None:
     ]
     # st.write(_options)
 
-    st.sidebar.markdown('---')
-    if st.sidebar.button('⚡ API'):
-        cookies.set('route', 'api')
-        st.experimental_rerun()
+    # st.sidebar.markdown('---')
+    # if st.sidebar.button('⚡ API'):
+    #     cookies.set('route', 'api')
+    #     st.experimental_rerun()
 
     # MAIN PANEL
     start = time.time_ns()

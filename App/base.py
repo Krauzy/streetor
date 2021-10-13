@@ -63,10 +63,10 @@ def render():
     if (route is None) | (route == 'home'):
         # Render home page
         home_render(cookies)
-    elif route == 'api':
-        # Render API page
-        st.warning('DB')
-        res = st.button('click')
-        st.write(res)
-        if st.button('Back'):
-            cookies.set('route', 'home')
+    # elif route == 'api':
+    #     # Render API page
+    #     st.warning('DB')
+    #     res = st.button('click')
+    #     st.write(res)
+    #     if st.button('Back'):
+    #         cookies.set('route', 'home')
