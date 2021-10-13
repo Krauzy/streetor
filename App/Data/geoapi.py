@@ -25,4 +25,4 @@ def get_address(lat, lon) -> str:
     })
     con.request('GET', f'/v1/reverse?{params}')
     data = con.getresponse().read()
-    return json.loads(data.decode('utf-8'))['data'][0]['name']
+    return str(json.loads(data.decode('utf-8'))['data'][0]['name']).upper()

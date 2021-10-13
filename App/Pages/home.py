@@ -4,7 +4,7 @@ Home page settings, render and config
 > home_render - Render the home page
 """
 import collections
-
+import time
 import streamlit as st
 from App.Pages.Components.map import scatterplot_map, heat_map, bubble_map, distplot
 from App.Pages.Components.load import load_component, load_style
@@ -305,7 +305,7 @@ def home_render(cookies) -> None:
         st.experimental_rerun()
 
     # MAIN PANEL
-
+    start = time.time_ns()
     model = load_model(
         fields={
             '_id': 0,
@@ -322,7 +322,7 @@ def home_render(cookies) -> None:
                             knn=_k,
                             clusters=_clusters,
                             acc=_acc)
-
+    stop = time.time_ns()
     st.title('Streetor 🚗')
     st.caption('The best way to deal with a problem')
     st.markdown('---')
@@ -344,16 +344,19 @@ def home_render(cookies) -> None:
             elif _plot == '🔴 Heat':
                 st.plotly_chart(heat_map(infos['CLUSTERS_MAP'], theme=_theme))
             else:
-                st.plotly_chart(bubble_map(infos['CLUSTERS_MAP'], theme=_theme))
+                st.plotly_chart(bubble_map(infos['CLUSTERS_MAP'], theme=_theme, color=_primary))
     else:
         _plot = st.radio('', ['📈 Latitude', '📉 Longitude'])
         with st.empty():
             load_component('App/Template/loading.html')
             if _plot == '📈 Latitude':
-                print(infos['RES_LAT'])
-                st.pyplot(distplot(infos['RES_LAT'], 'LATITUDE RESIDUAL'))
+                residual_index = 'RES_LAT'
             else:
-                st.pyplot(distplot(infos['RES_LON'], 'LONGITUDE RESIDUAL'))
+                residual_index = 'RES_LON'
+            st.pyplot(distplot(data=infos[residual_index],
+                               title='',
+                               theme=_theme,
+                               color=_primary))
     st.markdown('### Information')
     with st.expander('🎯 Result', expanded=False):
         st.markdown(f'''
@@ -380,6 +383,7 @@ def home_render(cookies) -> None:
             | K value of KNN | `{infos['KNN']}` |
             | Number of Clusters | `{infos['CLUSTERS']}` |
             | Distance Variance | `{infos['KM']} KM`|
+            | Runtime | `{round((stop - start) / 1000000, 1)} ms` |
             | Metric Distance | `Haversine` |
         ''')
         st.write(' ')
