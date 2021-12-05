@@ -2,12 +2,12 @@
 StreetorModel: model of ML to predict transit
 accidents in urban zones with KMeans and KNN
 """
+from math import sqrt
 from haversine import haversine
 from pandas import DataFrame, concat
 from sklearn.cluster import KMeans
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-from math import sqrt
 import streamlit as st
 import numpy as np
 

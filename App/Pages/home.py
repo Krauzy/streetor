@@ -6,7 +6,7 @@ Home page settings, render and config
 import collections
 import time
 import streamlit as st
-from App.Pages.Components.map import scatterplot_map, heat_map, bubble_map, distplot, reg_plot
+from App.Pages.Components.map import scatterplot_map, heat_map, bubble_map, reg_plot
 from App.Pages.Components.load import load_component, load_style
 from App.Data.single import load_model, run_model
 
@@ -207,7 +207,6 @@ def home_render() -> None:
                 residual_label = 'LONGITUDE'
             st.pyplot(reg_plot(data=infos[residual_index],
                                label=residual_label,
-                               title='',
                                theme=_theme,
                                color=_primary))
     st.markdown('### Information')

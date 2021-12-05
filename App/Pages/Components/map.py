@@ -170,13 +170,16 @@ def distplot(data: DataFrame or list, title: str, theme='dark', color='#6717AD')
     return fig.figure
 
 
-def reg_plot(data: DataFrame or list, label="LATITUDE", title="", theme='dark', color='#6717AD') -> Figure:
+def reg_plot(
+        data: DataFrame or list,
+        label="LATITUDE",
+        theme='dark',
+        color='#6717AD') -> Figure:
     """
     A distplot of RESIDUAL values
 
     :param label: Name of label ('LATITUDE' or 'LONGITUDE')
     :param data: A DataFrame with RESIDUAL column
-    :param title: text will displayed in title figure
     :param theme: theme of background graph (default is 'carto-darkmatter')
     :param color: color of dist bars (default is '#6717AD')
     :return: Figure of graph plotted
