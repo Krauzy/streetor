@@ -168,3 +168,43 @@ def distplot(data: DataFrame or list, title: str, theme='dark', color='#6717AD')
         aspect=1.5).set_titles(title)
 
     return fig.figure
+
+
+def reg_plot(data: DataFrame or list, label="LATITUDE", title="", theme='dark', color='#6717AD') -> Figure:
+    """
+    A distplot of RESIDUAL values
+
+    :param label: Name of label ('LATITUDE' or 'LONGITUDE')
+    :param data: A DataFrame with RESIDUAL column
+    :param title: text will displayed in title figure
+    :param theme: theme of background graph (default is 'carto-darkmatter')
+    :param color: color of dist bars (default is '#6717AD')
+    :return: Figure of graph plotted
+    """
+
+    # data = DataFrame(data, columns=['LABEL', 'RESIDUAL'])
+
+    face_color = '#202020'
+    tick_color = '#ffffff'
+
+    if theme != 'carto-darkmatter':
+        face_color = '#ffffff'
+        tick_color = '#202020'
+
+    sns.set(rc={
+        'axes.facecolor': face_color,
+        'figure.facecolor': face_color,
+        'axes.labelcolor': face_color,
+        'xtick.color': tick_color,
+        'ytick.color': tick_color,
+        'grid.linestyle': ''
+    })
+
+    fig = sns.regplot(
+        x=label,
+        y='RESIDUAL',
+        data=data,
+        scatter_kws={'color': '#6717AD', 'edgecolor': 'white'},
+        line_kws={'color': color, 'lw': 5}) #.set_titles(title)
+
+    return fig.figure

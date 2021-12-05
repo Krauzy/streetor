@@ -14,6 +14,7 @@ seaborn = "*"
 matplotlib = "*"
 certifi = "*"
 haversine = "*"
+numpy = "*"
 
 [dev-packages]
 python-dotenv = "*"

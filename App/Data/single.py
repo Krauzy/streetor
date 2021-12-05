@@ -16,7 +16,6 @@ def load_model(fields: dict, filter: dict) -> StreetorModel:
     :param filter: A dict of the filter that will be set in dataset
     :return: A StreetorModel instance
     """
-
     model = StreetorModel(get(fields, filter, 5000))
     model.week = filter['WEEK']
     model.period = filter['PERIOD']
@@ -24,7 +23,7 @@ def load_model(fields: dict, filter: dict) -> StreetorModel:
 
 
 @st.cache(show_spinner=False, allow_output_mutation=True)
-def run_model(model: StreetorModel, knn=1, clusters=200, acc=0.5) -> tuple or None:
+def run_model(model: StreetorModel, knn=1, clusters=200, acc=0.5, force=False) -> tuple or None:
     """
     Running functions of *StreetorModel*
 
@@ -32,6 +31,7 @@ def run_model(model: StreetorModel, knn=1, clusters=200, acc=0.5) -> tuple or No
     :param knn: Number of K set by KNN
     :param clusters: Number of cluster set by KMeans
     :param acc: Accuracy metric value of Machine Learning model
+    :param force: If force methods
     :return: If there is an error return is None, if not, return a tuple with
     predict dataset and a dict of stats
     """
@@ -40,5 +40,5 @@ def run_model(model: StreetorModel, knn=1, clusters=200, acc=0.5) -> tuple or No
         st.error('Failed to load dataset')
         return None
 
-    model.run(knn, clusters, acc)
+    model.run(knn, clusters, acc, force)
     return model.response()
