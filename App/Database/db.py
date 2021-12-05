@@ -24,7 +24,7 @@ def get_collection(cluster='main', collection='accidents'):
 
 
 @st.cache(show_spinner=False)
-def get(fields=None, options=None, limit=5, template='Dataframe') -> DataFrame or list:
+def get(fields=None, options=None, limit=5000, template='Dataframe') -> DataFrame or list:
     """
     Get function of MongoClient (similar to SELECT in SQL)
 

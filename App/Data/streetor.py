@@ -2,12 +2,52 @@
 StreetorModel: model of ML to predict transit
 accidents in urban zones with KMeans and KNN
 """
+from math import sqrt
 from haversine import haversine
 from pandas import DataFrame, concat
 from sklearn.cluster import KMeans
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import streamlit as st
+import numpy as np
+
+
+@st.cache(show_spinner=False)
+def def_cluster(data, n_interval=20, force=True):
+    """
+    Execute Elbow Method to get the optimal number of clusters
+    :param data: DataFrame of Latitude and Longitude columns
+    :param n_interval: Number that will be set by a space interval
+    :param force: If True, force run of hard methods
+    :return: Number(int) of optimal clusters
+    """
+
+    interval = np.linspace(int(len(data) / 5), int(len(data) / 2), n_interval, dtype=int)
+
+    if not force:
+        return interval[int(n_interval / 2)]
+
+    list_inertia = []
+    for cluster_len in interval:
+        kmeans = KMeans(n_clusters=cluster_len)
+        kmeans.fit(X=data)
+        list_inertia.append(kmeans.inertia_)
+
+    x1, y1 = 0, list_inertia[0]
+    x2, y2 = n_interval, list_inertia[len(list_inertia) - 1]
+
+    dist = []
+
+    for i in range(len(list_inertia)):
+        x0 = i + 2
+        y0 = list_inertia[i]
+        num = abs((y2 - y1) * x0 - (x2 - x1) * y0 + x2 * y1 - y2 * x1)
+        dem = sqrt((y2 - y1) ** 2 + (x2 - x1) ** 2)
+        dist.append(num / dem)
+
+    index_interval = dist.index(max(dist)) + 2
+
+    return interval[index_interval]
 
 
 class StreetorModel:
@@ -90,29 +130,30 @@ class StreetorModel:
         if value is not None:
             self.data = self.data[self.data[field] == value]
 
-    def run(self, k=1, clusters=100, acc=1.5) -> None:
+    def run(self, k=1, clusters=100, acc=1.5, force=False) -> None:
         """
         run functions, that execute all train and test of ML model
 
         :param k: k value of KNN
         :param clusters: K value of KMeans
         :param acc: accuracy of model
+        :param force: If force method
         :return: None
         """
 
+        # Set best cluster
         if k <= 0:
             self.k = 1
         else:
             self.k = k
 
         if (clusters <= 0) | (clusters >= len(self.data)):
-            self.n_clusters = int(len(self.data) / 3)
+            self.n_clusters = def_cluster(data=self.data[['LATITUDE', 'LONGITUDE']], force=force)
         else:
             self.n_clusters = clusters
-        # print('CLUSTERS:', self.n_clusters)
+
         kmeans = KMeans(self.n_clusters)
         self.data['cluster'] = kmeans.fit_predict(self.data[['LATITUDE', 'LONGITUDE']])
-        # print(self.data)
         train = self.data[:]
 
         self.data_predict = DataFrame()
@@ -243,6 +284,9 @@ class StreetorModel:
             'MSE': self.mse,
             'RMSE': self.rmse,
             'R2': self.coef,
+            'ERROR': round(haversine(
+                (-22.111553, -51.380377),
+                (-22.111553 + (self.mae / 2), -51.380377 + (self.mae / 2))), 3),
             'MED_LAT': self.med_lat,
             'MED_LON': self.med_lon,
             'SUM_LAT': self.sum_lat,
