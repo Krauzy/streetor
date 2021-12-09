@@ -73,14 +73,14 @@ def home_render() -> None:
             _acc = col.slider(label='Accuracy level',
                               min_value=0.0,
                               max_value=2.0,
-                              value=1.5,
+                              value=1,
                               step=0.1,
                               format='%f KM')
             _force = col.checkbox(label="Force hard process", value=False)
         else:
             _clusters = 0
             _k = 1
-            _acc = 0.5
+            _acc = 1
             _force = False
             st.text(' ')
 
