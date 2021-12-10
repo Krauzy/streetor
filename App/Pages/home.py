@@ -73,14 +73,14 @@ def home_render() -> None:
             _acc = col.slider(label='Accuracy level',
                               min_value=0.0,
                               max_value=2.0,
-                              value=1.5,
+                              value=1,
                               step=0.1,
                               format='%f KM')
             _force = col.checkbox(label="Force hard process", value=False)
         else:
             _clusters = 0
             _k = 1
-            _acc = 0.5
+            _acc = 1
             _force = False
             st.text(' ')
 
@@ -122,6 +122,9 @@ def home_render() -> None:
             'NIGHT'
         ], index=2)
         st.text(' ')
+        st.markdown('<a href="http://painelderesultados.infosiga.sp.gov.br/mapa/" ' +
+                    'style="color: white;text-decoration: none;" ' +
+                    'target="_blank">🔗 Database Reference</a>', True)
 
     _options = collections.defaultdict()
     _options['CITY'] = _city
@@ -151,9 +154,9 @@ def home_render() -> None:
     #     st.experimental_rerun()
 
     # MAIN PANEL
-
-    st.title('Streetor 🚗')
-    st.caption('The best way to deal with a problem')
+    load_component('App/Template/logo.html', 400)
+    # st.title('Streetor 🚗')
+    # st.caption('The best way to deal with a problem')
     st.markdown('---')
     _show = st.selectbox(label='',
                          options=[
@@ -238,6 +241,7 @@ def home_render() -> None:
             | Distance Variance | `{infos['KM']} KM`|
             | Runtime | `{round((stop - start) / 1000000, 1)} ms` |
             | Metric Distance | `Haversine` |
+            | Predicted Accidents | `{infos['PREV_ACCIDENTS']}` |
         ''')
         st.write(' ')
 
@@ -250,6 +254,7 @@ def home_render() -> None:
             | Period | `{infos['PERIOD']}` |
             | Day of Week | `{infos['WEEK']}` |
             | Total of Accidents | `{infos['TOTAL']}` |
+            | Relevant Accidents | `{infos['RELEVANT_ACCIDENTS']}` |
         ''')
         st.write(' ')
 

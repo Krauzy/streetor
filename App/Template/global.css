@@ -23,3 +23,7 @@ div.stAlert > div > div > div > div > p {
 [data-testid="stMarkdownContainer"] > table {
     width: 100%;
 }
+
+.main > div {
+    padding-top: 0px !important;
+}
