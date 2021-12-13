@@ -6,7 +6,7 @@ Home page settings, render and config
 import collections
 import time
 import streamlit as st
-from App.Pages.Components.map import scatterplot_map, heat_map, bubble_map, reg_plot
+from App.Pages.Components.map import scatterplot_map, heat_map, bubble_map, distplot #reg_plot
 from App.Pages.Components.load import load_component, load_style
 from App.Data.single import load_model, run_model
 
@@ -60,7 +60,7 @@ def home_render() -> None:
         st.caption('Settings of IA model')
         st.markdown('---')
         _streetor_ia = st.checkbox(label='Streetor IA ℠',
-                                   value=True)
+                                   value=False)
         if not _streetor_ia:
             st.text(' ')
             col, _ = st.columns([1.6, 0.1])
@@ -73,10 +73,12 @@ def home_render() -> None:
             _acc = col.slider(label='Accuracy level',
                               min_value=0.0,
                               max_value=2.0,
-                              value=1,
+                              value=1.0,
                               step=0.1,
                               format='%f KM')
-            _force = col.checkbox(label="Force hard process", value=False)
+            col.text(' ')
+            _force = col.checkbox(label="Force hard process", value=False,
+                                  help="This method run a hard process and demand a high cost of time")
         else:
             _clusters = 0
             _k = 1
@@ -96,7 +98,7 @@ def home_render() -> None:
                                     value=False,
                                     help='This requires a very high cost, so it may take a while')
         st.markdown('---')
-        _city = st.selectbox('City', ['SAO PAULO', 'PRESIDENTE PRUDENTE'], index=0)
+        _city = st.selectbox('City', ['SAO PAULO', 'PRESIDENTE PRUDENTE'], index=1)
         st.write(' ')
         col, _ = st.columns([1.6, 0.1])
         _min_period, _max_period = col.slider(label='Period',
@@ -208,8 +210,8 @@ def home_render() -> None:
             else:
                 residual_index = 'RES_LON'
                 residual_label = 'LONGITUDE'
-            st.pyplot(reg_plot(data=infos[residual_index],
-                               label=residual_label,
+            st.pyplot(distplot(data=infos[residual_index],
+                               title=residual_label,
                                theme=_theme,
                                color=_primary))
     st.markdown('### Information')
