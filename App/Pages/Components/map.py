@@ -112,6 +112,7 @@ def bubble_map(info: list, theme='carto-darkmatter', color='#DC2F02'):
     """
 
     data = DataFrame(info, columns=['LATITUDE', 'LONGITUDE', 'INCIDENCE'])
+    data = data[data['INCIDENCE'] > 4]
     fig = px.scatter_mapbox(data,
                             lat="LATITUDE",
                             lon="LONGITUDE",

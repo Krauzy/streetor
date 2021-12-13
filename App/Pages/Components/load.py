@@ -17,16 +17,17 @@ def load_style(file_name) -> None:
         st.markdown(f'<style>{style_file.read()}</style>', unsafe_allow_html=True)
 
 
-def load_component(file_name) -> None:
+def load_component(file_name, height=100) -> None:
     """
     Load a html/css/js file like component
 
+    :param height: height of component (pixels)
     :param file_name: Path of HTML/CSS/JS file
     :return: None
     """
 
     with open(file_name, encoding='utf-8') as component_file:
-        components.html(component_file.read(), height=100)
+        components.html(component_file.read(), height=height)
 
 
 def load_template(file_name) -> None:

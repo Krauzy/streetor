@@ -64,6 +64,7 @@ class StreetorModel:
 
         self.error = False
         self.data = DataFrame(data)
+        self.total_accidents = len(self.data)
         if 'MONTH' in self.data.columns:
             self.data['MONTH'] = self.data['MONTH'].replace({
                 'JANUARY': 1,
@@ -116,7 +117,10 @@ class StreetorModel:
         self.period = None
         self.week = None
 
+        self.active_clusters = 0
+
         self.acc_km = None
+        self.accidents_prev = 0
         self.clusters_map = []
 
     def filter(self, field, value) -> None:
@@ -163,16 +167,19 @@ class StreetorModel:
         for i in range(self.n_clusters):
             knn = KNeighborsRegressor(n_neighbors=k)
             df_train = train[train['cluster'] == i]
-            lat_med = sum(df_train['LATITUDE']) / len(df_train)
-            lon_med = sum(df_train['LONGITUDE']) / len(df_train)
-            self.clusters_map.append([lat_med, lon_med, len(df_train)])
+            _len = len(df_train)
+            lat_med = sum(df_train['LATITUDE']) / _len
+            lon_med = sum(df_train['LONGITUDE']) / _len
 
-            if len(df_train) > self.diff:
-                total = len(df_train)
-                half = int(total - (total / 2))
+            if _len > self.diff:
+                self.clusters_map.append([lat_med, lon_med, _len])
+                self.active_clusters += 1
+                half = int(_len - (_len / self.diff))
 
                 t_train = df_train[:half].sort_values(by='LONGITUDE')
                 t_test = df_train[half:]
+
+                self.accidents_prev += len(t_test)
 
                 x_train = t_train.drop(columns=['LATITUDE', 'LONGITUDE'])
                 y_train = t_train[['LATITUDE', 'LONGITUDE']]
@@ -292,13 +299,15 @@ class StreetorModel:
             'SUM_LAT': self.sum_lat,
             'SUM_LON': self.sum_lon,
             'ACC': self.acc,
-            'TOTAL': self.total,
+            'TOTAL': self.total_accidents,
+            'RELEVANT_ACCIDENTS': self.total,
             'KNN': self.k,
-            'CLUSTERS': self.n_clusters,
+            'CLUSTERS': self.active_clusters,
             'PERIOD': self.period,
             'WEEK': self.week,
             'KM': self.acc_km,
             'RES_LON': self.res_lon,
             'RES_LAT': self.res_lat,
+            'PREV_ACCIDENTS': self.accidents_prev,
             'CLUSTERS_MAP': self.clusters_map
         }
