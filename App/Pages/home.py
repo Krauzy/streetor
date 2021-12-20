@@ -78,7 +78,8 @@ def home_render() -> None:
                               format='%f KM')
             col.text(' ')
             _force = col.checkbox(label="Force hard process", value=False,
-                                  help="This method run a hard process and demand a high cost of time")
+                                  help="This method run a hard process "
+                                       + "and demand a high cost of time")
         else:
             _clusters = 0
             _k = 1

@@ -48,6 +48,8 @@ def scatterplot_map(info: DataFrame,
     else:
         info['ADDRESS'] = 'NOT AVAILABLE'
 
+    info = info.sort_values(by='TARGET', ascending=False)
+
     fig = px.scatter_mapbox(info,
                             lat="LATITUDE",
                             lon="LONGITUDE",
